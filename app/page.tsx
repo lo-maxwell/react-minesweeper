@@ -1,98 +1,115 @@
 'use client'
 // Allows useState and onClick, which are client side hooks
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type SquareType = [string, boolean, number]
+type OnSquareClickHandler = () => void;
 
 const DEFAULT_BOARD_SIZE = 10;
 
-function Square({ state, isBomb, value }: {state: string, isBomb: boolean, value: number}) {
-  return (<button className="square"> {value} </button>);
+function Square({ state, isBomb, value, onSquareClick}: {state: string, isBomb: boolean, value: number, onSquareClick: OnSquareClickHandler}) {
+  if (state === "Hidden") {
+    return (<button className="square" onClick={onSquareClick}></button>);
+  }
+  if (isBomb) {
+    return (<button className="bomb"> Boom </button>);
+  } else {
+    return (<button className="square"> {value} </button>);
+  }
 }
 
 export default function Board() {
-  const [width, setWidth] = useState(DEFAULT_BOARD_SIZE);
-  const [height, setHeight] = useState(DEFAULT_BOARD_SIZE);
-  const [numBombs, setNumBombs] = useState(DEFAULT_BOARD_SIZE);
+  const [width, setWidth] = useState(10);
+  const [height, setHeight] = useState(10);
+  const [numBombs, setNumBombs] = useState(20);
 
-  const generateSquare = (): SquareType =>  ['', false, 0]
+  const generateSquare = (): SquareType =>  ['', false, -2];
   // const initialSquares = new Array(width * height).fill(0).map(e => ['', false, 0] as SquareType)
-  const initialSquares = new Array(width * height).fill(0).map(generateSquare)
+  const generateRow = (): Array<SquareType> => Array(width).fill(0).map(generateSquare);
+  const initialSquares = new Array(height).fill(0).map(generateRow);
   
-  console.log(initialSquares)
-  const [squares, setSquares] = useState<Array<SquareType>>(generateBombs(initialSquares, 50));
+  // console.log(initialSquares)
+  const [squares, setSquares] = useState<Array<Array<SquareType>>>(initialSquares);
+
+  useEffect(() => {
+    setSquares(generateBombs(initialSquares, 10));
+  }, []);
 
   const rows = Array.from({length: height}, (_, index) => index);
   const cols = Array.from({length: width}, (_, index) => index);
 
-  function generateBombs(squares: Array<SquareType>, bombs: number) : Array<SquareType> {
+  function generateBombs(squares: Array<Array<SquareType>>, bombs: number) : Array<Array<SquareType>> {
     const nextSquares = squares.slice();
     
     let bombsPlaced = 0;
     //plant bombs
-    for (let i = 0; i < squares.length; i++) {
-      nextSquares[i][0] = "Hidden";
-      let bombRNG = false;
-      if (bombsPlaced === bombs)
-        bombRNG = false;
-      else
-        bombRNG = Math.random() <= (bombs - bombsPlaced) / (squares.length - i);
-      console.log(bombRNG);
-      if (bombRNG) {
-        nextSquares[i][1] = true;
-        nextSquares[i][2] = -1;
-        bombsPlaced += 1;
-      } else {
-        nextSquares[i][1] = false;
-        nextSquares[i][2] = 0;
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+        nextSquares[i][j][0] = "Hidden";
+        let bombRNG = false;
+        if (bombsPlaced === bombs)
+          bombRNG = false;
+        else
+          bombRNG = Math.random() <= (bombs - bombsPlaced) / (width * height - (i*width + j));
+        // console.log(bombRNG);
+        if (bombRNG) {
+          nextSquares[i][j][1] = true;
+          nextSquares[i][j][2] = -1;
+          bombsPlaced += 1;
+        } else {
+          nextSquares[i][j][1] = false;
+          nextSquares[i][j][2] = 0;
+        }
       }
     }
-    console.log(nextSquares);
+    
+    // console.log(nextSquares);
 
-    console.log("updating hints");
+    // console.log("updating hints");
     //update hints
-    for (let i = 0; i < squares.length; i++) {
-      //is a bomb
-      if (nextSquares[i][1]) {
-        //top left corner
-        if (i - 11 >= 0 && i - 11 < nextSquares.length && !nextSquares[i-11][1]) {
-          nextSquares[i-11][2] += 1;
-        }
-        //top middle
-        if (i - 10 >= 0 && i - 10 < nextSquares.length && !nextSquares[i-10][1]) {
-          nextSquares[i-10][2] += 1;
-        }
-        //top right corner
-        if (i - 9 >= 0 && i - 9 < nextSquares.length && !nextSquares[i-9][1]) {
-          nextSquares[i-9][2] += 1;
-        }
-        //left
-        if (i - 1 >= 0 && i - 1 < nextSquares.length && !nextSquares[i-1][1]) {
-          nextSquares[i-1][2] += 1;
-        }
-        //right
-        if (i + 1 >= 0 && i + 1 < nextSquares.length && !nextSquares[i+1][1]) {
-          nextSquares[i+1][2] += 1;
-        }
-        //bottom left
-        if (i + 9 >= 0 && i + 9 < nextSquares.length && !nextSquares[i+9][1]) {
-          nextSquares[i+9][2] += 1;
-        }
-        //bottom middle
-        if (i + 10 >= 0 && i + 10 < nextSquares.length && !nextSquares[i+10][1]) {
-          nextSquares[i+10][2] += 1;
-        }
-        //bottom right corner
-        if (i + 11 >= 0 && i + 11 < nextSquares.length && !nextSquares[i+11][1]) {
-          nextSquares[i+11][2] += 1;
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+        //is a bomb, update neighbors
+        if (nextSquares[i][j][1]) {
+          for (let x = -1; x <= 1; x++) {
+            for (let y = -1; y <= 1; y++) {
+              if (i + x >= 0 && i + x < height && j + y >= 0 && j + y < width) {
+                if (!nextSquares[i+x][j+y][1]) {
+                  nextSquares[i+x][j+y][2]++;
+                }
+              }
+            }
+          }
         }
       }
     }
 
-    console.log(nextSquares);
+    // console.log(nextSquares);
     
     return nextSquares;
+  }
+
+  function revealSquare (currentSquares: Array<Array<SquareType>>, row: number, col: number) {
+    var nextSquares = currentSquares.slice();
+    if (nextSquares[row][col][0] === "Hidden") {
+      nextSquares[row][col][0] = "Revealed";
+      if (nextSquares[row][col][2] === 0) {
+        for (let x = -1; x <= 1; x++) {
+          for (let y = -1; y <= 1; y++) {
+            if (row + x >= 0 && row + x < height && col + y >= 0 && col + y < width && nextSquares[row+x][col+y][0] === "Hidden") {
+              nextSquares = revealSquare(nextSquares, row + x, col + y);
+            }
+          }
+        }
+      }
+    }
+    return nextSquares;
+  }
+
+  const handleClick = (row: number, col: number) => {
+    const nextSquares = revealSquare(squares.slice(), row, col);
+    setSquares(nextSquares);
   }
   
 
@@ -100,13 +117,15 @@ export default function Board() {
     return (
       <>
       {rows.map((row) => (
-        <div className="board-row">
+        <div className="board-row" key={row}>
           {cols.map((col) => {
             const index = row * width + col;
             return (<Square 
-              state={squares[index][0]} 
-              isBomb={squares[index][1]}
-              value={squares[index][2]}
+              key = {index}
+              state={squares[row][col][0]} 
+              isBomb={squares[row][col][1]}
+              value={squares[row][col][2]}
+              onSquareClick={() => handleClick(row, col)}
               />);
         })}
         </div>
