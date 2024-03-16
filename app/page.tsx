@@ -1,14 +1,126 @@
 'use client'
-// Allows useState and onClick, whare client side hooks
+// Allows useState and onClick, which are client side hooks
 
 import { useState } from 'react';
 
-export default function Square() {
-  const [state, setState] = useState(null);
-  const [isBomb, setBomb] = useState(false);
-  const [value, setValue] = useState("");
+type SquareType = [string, boolean, number]
 
-  return (<button className="square"> {value}</button>);
+const DEFAULT_BOARD_SIZE = 10;
+
+function Square({ state, isBomb, value }: {state: string, isBomb: boolean, value: number}) {
+  return (<button className="square"> {value} </button>);
+}
+
+export default function Board() {
+  const [width, setWidth] = useState(DEFAULT_BOARD_SIZE);
+  const [height, setHeight] = useState(DEFAULT_BOARD_SIZE);
+  const [numBombs, setNumBombs] = useState(DEFAULT_BOARD_SIZE);
+
+  const generateSquare = (): SquareType =>  ['', false, 0]
+  // const initialSquares = new Array(width * height).fill(0).map(e => ['', false, 0] as SquareType)
+  const initialSquares = new Array(width * height).fill(0).map(generateSquare)
+  
+  console.log(initialSquares)
+  const [squares, setSquares] = useState<Array<SquareType>>(generateBombs(initialSquares, 50));
+
+  const rows = Array.from({length: height}, (_, index) => index);
+  const cols = Array.from({length: width}, (_, index) => index);
+
+  function generateBombs(squares: Array<SquareType>, bombs: number) : Array<SquareType> {
+    const nextSquares = squares.slice();
+    
+    let bombsPlaced = 0;
+    //plant bombs
+    for (let i = 0; i < squares.length; i++) {
+      nextSquares[i][0] = "Hidden";
+      let bombRNG = false;
+      if (bombsPlaced === bombs)
+        bombRNG = false;
+      else
+        bombRNG = Math.random() <= (bombs - bombsPlaced) / (squares.length - i);
+      console.log(bombRNG);
+      if (bombRNG) {
+        nextSquares[i][1] = true;
+        nextSquares[i][2] = -1;
+        bombsPlaced += 1;
+      } else {
+        nextSquares[i][1] = false;
+        nextSquares[i][2] = 0;
+      }
+    }
+    console.log(nextSquares);
+
+    console.log("updating hints");
+    //update hints
+    for (let i = 0; i < squares.length; i++) {
+      //is a bomb
+      if (nextSquares[i][1]) {
+        //top left corner
+        if (i - 11 >= 0 && i - 11 < nextSquares.length && !nextSquares[i-11][1]) {
+          nextSquares[i-11][2] += 1;
+        }
+        //top middle
+        if (i - 10 >= 0 && i - 10 < nextSquares.length && !nextSquares[i-10][1]) {
+          nextSquares[i-10][2] += 1;
+        }
+        //top right corner
+        if (i - 9 >= 0 && i - 9 < nextSquares.length && !nextSquares[i-9][1]) {
+          nextSquares[i-9][2] += 1;
+        }
+        //left
+        if (i - 1 >= 0 && i - 1 < nextSquares.length && !nextSquares[i-1][1]) {
+          nextSquares[i-1][2] += 1;
+        }
+        //right
+        if (i + 1 >= 0 && i + 1 < nextSquares.length && !nextSquares[i+1][1]) {
+          nextSquares[i+1][2] += 1;
+        }
+        //bottom left
+        if (i + 9 >= 0 && i + 9 < nextSquares.length && !nextSquares[i+9][1]) {
+          nextSquares[i+9][2] += 1;
+        }
+        //bottom middle
+        if (i + 10 >= 0 && i + 10 < nextSquares.length && !nextSquares[i+10][1]) {
+          nextSquares[i+10][2] += 1;
+        }
+        //bottom right corner
+        if (i + 11 >= 0 && i + 11 < nextSquares.length && !nextSquares[i+11][1]) {
+          nextSquares[i+11][2] += 1;
+        }
+      }
+    }
+
+    console.log(nextSquares);
+    
+    return nextSquares;
+  }
+  
+
+  function renderBoard() {
+    return (
+      <>
+      {rows.map((row) => (
+        <div className="board-row">
+          {cols.map((col) => {
+            const index = row * width + col;
+            return (<Square 
+              state={squares[index][0]} 
+              isBomb={squares[index][1]}
+              value={squares[index][2]}
+              />);
+        })}
+        </div>
+      ))}
+      </>
+    )
+  }
+   
+
+  return (
+    <>
+    {renderBoard()}
+    </>
+  );
 }
 
 // export default function Home() {
