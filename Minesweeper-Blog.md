@@ -38,8 +38,16 @@
   * Uses React.syntheticEvent and e.preventDefault() to get the right click flag to work
 
 
+## Day 5
+
+### Added "number of bombs remaining" message to the top
+
+  * Had a 1-behind error due to using setState, so moved it into a function to recalculate the message every render
+    * Moved to useEffect() - this takes in a dependency and runs a function each time it is changed. Used this to manually update the game status each time we modify win/loss/bombs remaining
+
+
 ## TODO
 
-### Fix Board, maybe make a 2d representation instead of 1d, right now it checks by wrapping around (and only works for 10 units)
+### Generate biased boards/make sure boards are solvable
 
 ### Update CSS using Tailwind to prettyify everything

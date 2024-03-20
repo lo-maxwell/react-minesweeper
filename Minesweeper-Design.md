@@ -66,7 +66,7 @@ Built in React
     * If Marked, set State to Hidden
 
 ### Board
- * Represented by 2D Array of Squares - consider making this a 1D array instead?
+ * Represented by 2D Array of Squares
  * Field: Width
    * Integer
  * Field: Height
