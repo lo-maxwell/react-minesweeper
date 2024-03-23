@@ -73,15 +73,58 @@ function Board({width, height, numBombs, squares, handleLeftClick, handleRightCl
   );
 }
 
+type inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => void;  
+type submitHandler = (e: React.FormEvent<HTMLFormElement>) => void; 
+
+function GameConfigForm({formData, handleInputChange, handleSubmit}: {formData: {rows: string, cols: string, numBombs: string}, handleInputChange: inputChangeHandler, handleSubmit: submitHandler}) {
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="rows">Rows:</label>
+        <input
+          type="text"
+          id="rows"
+          name="rows"
+          value={String(formData.rows)}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="cols">Columns:</label>
+        <input
+          type="text"
+          id="cols"
+          name="cols"
+          value={String(formData.cols)}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div>
+        <label htmlFor="numBombs">Bombs:</label>
+        <input
+          type="numBombs"
+          id="numBombs"
+          name="numBombs"
+          value={String(formData.numBombs)}
+          onChange={handleInputChange}
+        />
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  );
+
+}
+
+
 export default function Game() {
   const [width, setWidth] = useState(10);
   const [height, setHeight] = useState(10);
-  const [numBombs, setNumBombs] = useState(5);
+  const [numBombs, setNumBombs] = useState(10);
   const generateSquare = (): SquareType =>  ['', false, -2];
   // const initialSquares = new Array(width * height).fill(0).map(e => ['', false, 0] as SquareType)
-  const generateRow = (): Array<SquareType> => Array(width).fill(0).map(generateSquare);
-  const initialSquares = new Array(height).fill(0).map(generateRow);
-  const [squares, setSquares] = useState<Array<Array<SquareType>>>(generateBombs(initialSquares, numBombs));
+  const generateRow = (width: number) => ():  Array<SquareType> => Array(width).fill(0).map(generateSquare);
+  const initialSquares = new Array(height).fill(0).map(generateRow(width));
+  const [squares, setSquares] = useState<Array<Array<SquareType>>>(generateBombs(initialSquares, numBombs, height, width));
   const rows = Array.from({length: height}, (_, index) => index);
   const cols = Array.from({length: width}, (_, index) => index);
   const [gameIsOver, setGameIsOver] = useState(false);
@@ -90,9 +133,67 @@ export default function Game() {
   const [gameStatus, setGameStatus] = useState("");
   const [squaresRevealed, setSquaresRevealed] = useState(0);
   const [numFlags, setNumFlags] = useState(0);
-  
 
-  function generateBombs(squares: Array<Array<SquareType>>, bombs: number) : Array<Array<SquareType>> {
+  //Config Form
+  const [formData, setFormData] = useState({
+    rows: String(DEFAULT_BOARD_SIZE), 
+    cols: String(DEFAULT_BOARD_SIZE), 
+    numBombs: String(DEFAULT_BOARD_SIZE)
+  });
+
+  const handleGameConfigFormInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+
+  };
+
+  const handleGameConfigFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log('Form submitted', formData);
+    const newData = handleGameFormSubmitHelper();
+    setFormData(newData);
+  };
+
+  function handleGameFormSubmitHelper() {
+    const newData = {rows: formData['rows'], cols: formData['cols'], numBombs: formData['numBombs']}
+
+    let newRows = parseInt(formData['rows'], 10) || DEFAULT_BOARD_SIZE;
+    let newCols = parseInt(formData['cols'], 10) || DEFAULT_BOARD_SIZE;
+    let newNumBombs = parseInt(formData['numBombs'], 10) || DEFAULT_BOARD_SIZE;
+
+    if (newRows <= 0) {
+      newRows = 1;
+    }
+    if (newRows > 100) {
+      newRows = 100;
+    }
+    if (newCols <= 0) {
+      newCols = 1;
+    }
+    if (newCols > 100) {
+      newCols = 100;
+    }
+    if (newNumBombs <= 0) {
+      newNumBombs = 1;
+    }
+    if (newNumBombs > newRows * newCols) {
+      newNumBombs = Math.max(newRows * newCols - 1, 1);
+    }
+
+    newData['rows'] = String(newRows);
+    newData['cols'] = String(newCols);
+    newData['numBombs'] = String(newNumBombs);
+
+    return newData;
+  }
+
+  
+  //Game Setup
+  function generateBombs(squares: Array<Array<SquareType>>, bombs: number, height: number, width: number) : Array<Array<SquareType>> {
     const nextSquares = squares.slice();
     let bombsPlaced = 0;
     //plant bombs
@@ -104,7 +205,6 @@ export default function Game() {
           bombRNG = false;
         else
           bombRNG = Math.random() <= (bombs - bombsPlaced) / (width * height - (i*width + j));
-        // console.log(bombRNG);
         if (bombRNG) {
           nextSquares[i][j][1] = true;
           nextSquares[i][j][2] = -1;
@@ -116,9 +216,6 @@ export default function Game() {
       }
     }
     
-    // console.log(nextSquares);
-
-    // console.log("updating hints");
     //update hints
     for (let i = 0; i < height; i++) {
       for (let j = 0; j < width; j++) {
@@ -142,6 +239,7 @@ export default function Game() {
     return nextSquares;
   }
 
+  //Game handlers
   function clickSquare (currentSquares: Array<Array<SquareType>>, row: number, col: number, clickType: string) {
     let nextSquares = currentSquares.slice();
     const isFlag = clickType==="LEFT" && flagMode || clickType==="RIGHT" && !flagMode;
@@ -211,7 +309,16 @@ export default function Game() {
   }
 
   const restartBoard = () => {
-    const nextSquares = generateBombs(initialSquares, numBombs);
+    const newData = handleGameFormSubmitHelper();
+    setFormData(newData);
+    const newHeight = parseInt(newData.rows, 10);
+    const newWidth = parseInt(newData.cols, 10);
+    const newNumBombs = parseInt(newData.numBombs, 10);
+    setHeight(newHeight);
+    setWidth(newWidth);
+    setNumBombs(newNumBombs);
+    const newInitialSquares = new Array(newHeight).fill(0).map(generateRow(newWidth));
+    const nextSquares = generateBombs(newInitialSquares, newNumBombs, newHeight, newWidth);
     setSquares(nextSquares);
     setGameIsOver(false);
     setBombRevealed(false);
@@ -225,6 +332,7 @@ export default function Game() {
     setFlagMode(!flagMode);
   }
 
+  //Render UI helpers
   function renderFlagModeButton () {
     if (flagMode) {
       return <button onClick={invertFlagMode} className="flag-mode-on">Flag Mode</button>;
@@ -272,7 +380,22 @@ export default function Game() {
         handleRightClick={handleRightClick}
         />
       </div>
+      <div className="config">
+        <button>Edit Game Parameters</button>
+        <GameConfigForm 
+        formData={formData}
+        handleInputChange={handleGameConfigFormInputChange}
+        handleSubmit={handleGameConfigFormSubmit}
+        />
+      </div>
     </div>
     </>
   );
 }
+
+// export default function GamePage() {
+
+
+
+//   return <Game/>;
+// }

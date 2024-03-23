@@ -46,7 +46,18 @@
     * Moved to useEffect() - this takes in a dependency and runs a function each time it is changed. Used this to manually update the game status each time we modify win/loss/bombs remaining
 
 
+## Day 6
+
+### Added form to customize the number of rows/columns/bombs
+
+
 ## TODO
+
+### Add UI to edit board size and number of bombs
+
+### Flag all bombs on won screen
+
+### Show all bombs on loss screen, with extra marker for last clicked
 
 ### Generate biased boards/make sure boards are solvable
 
