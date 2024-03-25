@@ -2,118 +2,120 @@
 // Allows useState and onClick, which are client side hooks
 
 import React, { useEffect, useState } from 'react';
+import { Config } from './Config';
+import { SquareType, DEFAULT_BOARD_SIZE, Board } from './Board';
 
-type SquareType = [string, boolean, number]
-type OnSquareClickHandler = () => void;
-type OnSquareRightClickHandler = (e: React.SyntheticEvent) => void;
+// type SquareType = [string, boolean, number]
+// type OnSquareClickHandler = () => void;
+// type OnSquareRightClickHandler = (e: React.SyntheticEvent) => void;
 
-const DEFAULT_BOARD_SIZE = 10;
+// const DEFAULT_BOARD_SIZE = 10;
 
-function Square({ state, isBomb, value, onSquareLeftClick, onSquareRightClick}: {state: string, isBomb: boolean, value: number, onSquareLeftClick: OnSquareClickHandler, onSquareRightClick: OnSquareRightClickHandler}) {
-  if (state === "Hidden") {
-    return (<button className="square-hidden" onClick={onSquareLeftClick} onContextMenu={onSquareRightClick}></button>);
-  } else if (state === "Flagged") {
-    return (<button className="square-flag" onClick={onSquareLeftClick} onContextMenu={onSquareRightClick}>Flag</button>);
-  }
-  if (isBomb) {
-    return (<button className="square-bomb"> Boom </button>);
-  } else {
-    if (value === 0) {
-      return (<button className="square-revealed"></button>);
-    } else {
-      return (<button className="square-revealed"> {value} </button>);
-    }
-  }
-}
+// function Square({ state, isBomb, value, onSquareLeftClick, onSquareRightClick}: {state: string, isBomb: boolean, value: number, onSquareLeftClick: OnSquareClickHandler, onSquareRightClick: OnSquareRightClickHandler}) {
+//   if (state === "Hidden") {
+//     return (<button className="square-hidden" onClick={onSquareLeftClick} onContextMenu={onSquareRightClick}></button>);
+//   } else if (state === "Flagged") {
+//     return (<button className="square-flag" onClick={onSquareLeftClick} onContextMenu={onSquareRightClick}>Flag</button>);
+//   }
+//   if (isBomb) {
+//     return (<button className="square-bomb"> Boom </button>);
+//   } else {
+//     if (value === 0) {
+//       return (<button className="square-revealed"></button>);
+//     } else {
+//       return (<button className="square-revealed"> {value} </button>);
+//     }
+//   }
+// }
 
-function Board({width, height, numBombs, squares, handleLeftClick, handleRightClick}: {width: number, height: number, numBombs: number, squares: Array<Array<SquareType>>, handleLeftClick: Function, handleRightClick: Function}) {
-  // const [width, setWidth] = useState(10);
-  // const [height, setHeight] = useState(10);
-  // const [numBombs, setNumBombs] = useState(20);
+// function Board({width, height, numBombs, squares, handleLeftClick, handleRightClick}: {width: number, height: number, numBombs: number, squares: Array<Array<SquareType>>, handleLeftClick: Function, handleRightClick: Function}) {
+//   // const [width, setWidth] = useState(10);
+//   // const [height, setHeight] = useState(10);
+//   // const [numBombs, setNumBombs] = useState(20);
 
   
   
-  // console.log(initialSquares)
-  // const [squares, setSquares] = useState<Array<Array<SquareType>>>(generateBombs(initialSquares, numBombs));
+//   // console.log(initialSquares)
+//   // const [squares, setSquares] = useState<Array<Array<SquareType>>>(generateBombs(initialSquares, numBombs));
 
-  // useEffect(() => {
-  //   setSquares(generateBombs(initialSquares, numBombs));
-  // }, []);
+//   // useEffect(() => {
+//   //   setSquares(generateBombs(initialSquares, numBombs));
+//   // }, []);
 
-  const rows = Array.from({length: height}, (_, index) => index);
-  const cols = Array.from({length: width}, (_, index) => index);
+//   const rows = Array.from({length: height}, (_, index) => index);
+//   const cols = Array.from({length: width}, (_, index) => index);
 
-  function renderBoard() {
-    return (
-      <>
-      {rows.map((row) => (
-        <div className="board-row" key={row}>
-          {cols.map((col) => {
-            const index = row * width + col;
-            return (<Square 
-              key = {index}
-              state={squares[row][col][0]} 
-              isBomb={squares[row][col][1]}
-              value={squares[row][col][2]}
-              onSquareLeftClick={() => handleLeftClick(row, col)}
-              onSquareRightClick={(e) => handleRightClick(e, row, col)}
-              />);
-        })}
-        </div>
-      ))}
-      </>
-    )
-  }
+//   function renderBoard() {
+//     return (
+//       <>
+//       {rows.map((row) => (
+//         <div className="board-row" key={row}>
+//           {cols.map((col) => {
+//             const index = row * width + col;
+//             return (<Square 
+//               key = {index}
+//               state={squares[row][col][0]} 
+//               isBomb={squares[row][col][1]}
+//               value={squares[row][col][2]}
+//               onSquareLeftClick={() => handleLeftClick(row, col)}
+//               onSquareRightClick={(e) => handleRightClick(e, row, col)}
+//               />);
+//         })}
+//         </div>
+//       ))}
+//       </>
+//     )
+//   }
    
 
-  return (
-    <>
-    {renderBoard()}
-    </>
-  );
-}
+//   return (
+//     <>
+//     {renderBoard()}
+//     </>
+//   );
+// }
 
-type inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => void;  
-type submitHandler = (e: React.FormEvent<HTMLFormElement>) => void; 
+// type inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => void;  
+// type submitHandler = (e: React.FormEvent<HTMLFormElement>) => void; 
 
-function GameConfigForm({formData, handleInputChange, handleSubmit}: {formData: {rows: string, cols: string, numBombs: string}, handleInputChange: inputChangeHandler, handleSubmit: submitHandler}) {
-  return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="rows">Rows:</label>
-        <input
-          type="text"
-          id="rows"
-          name="rows"
-          value={String(formData.rows)}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div>
-        <label htmlFor="cols">Columns:</label>
-        <input
-          type="text"
-          id="cols"
-          name="cols"
-          value={String(formData.cols)}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div>
-        <label htmlFor="numBombs">Bombs:</label>
-        <input
-          type="numBombs"
-          id="numBombs"
-          name="numBombs"
-          value={String(formData.numBombs)}
-          onChange={handleInputChange}
-        />
-      </div>
-      <button type="submit">Submit</button>
-    </form>
-  );
+// function GameConfigForm({formData, handleInputChange, handleSubmit}: {formData: {rows: string, cols: string, numBombs: string}, handleInputChange: inputChangeHandler, handleSubmit: submitHandler}) {
+//   return (
+//     <form onSubmit={handleSubmit}>
+//       <div>
+//         <label htmlFor="rows">Rows:</label>
+//         <input
+//           type="text"
+//           id="rows"
+//           name="rows"
+//           value={String(formData.rows)}
+//           onChange={handleInputChange}
+//         />
+//       </div>
+//       <div>
+//         <label htmlFor="cols">Columns:</label>
+//         <input
+//           type="number"
+//           id="cols"
+//           name="cols"
+//           value={String(formData.cols)}
+//           onChange={handleInputChange}
+//         />
+//       </div>
+//       <div>
+//         <label htmlFor="numBombs">Bombs:</label>
+//         <input
+//           type="numBombs"
+//           id="numBombs"
+//           name="numBombs"
+//           value={String(formData.numBombs)}
+//           onChange={handleInputChange}
+//         />
+//       </div>
+//       <button type="submit">Submit</button>
+//     </form>
+//   );
 
-}
+// }
 
 
 export default function Game() {
@@ -143,6 +145,7 @@ export default function Game() {
 
   const handleGameConfigFormInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    console.log('Form changed', formData);
 
     setFormData({
       ...formData,
@@ -266,6 +269,8 @@ export default function Game() {
         }
         if (nextSquares[row][col][1]) {
           setBombRevealed(true);
+          //Flag as last clicked bomb so we can display it on screen
+          nextSquares[row][col][2] = -2;
         }
       }
     }
@@ -279,13 +284,45 @@ export default function Game() {
     }
   }
 
+  function revealBombs(currentSquares: Array<Array<SquareType>>, height: number, width: number) {
+    let nextSquares = currentSquares.slice();
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+        //is hidden, is a bomb, is not most recently clicked bomb -> display as bomb
+        if (nextSquares[i][j][0] === "Hidden" && nextSquares[i][j][1] && nextSquares[i][j][2 ]=== -1) {
+          nextSquares[i][j][0] = "Revealed";
+        }
+        //is flagged, is not a bomb -> display as incorrect flag
+        if (nextSquares[i][j][0] === "Flagged" && !nextSquares[i][j][1]) {
+          nextSquares[i][j][0] = "Wrong Flag";
+        }
+      }
+    }
+    return nextSquares;
+  }
+
+  function revealFlags(currentSquares: Array<Array<SquareType>>, height: number, width: number) {
+    let nextSquares = currentSquares.slice();
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+        //is flagged, or is hidden -> Show on game win screen (on game win, all unrevealed squares are bombs)
+        if (nextSquares[i][j][0] === "Hidden" || nextSquares[i][j][0] === "Flagged") {
+          nextSquares[i][j][0] = "Winning Flag";
+        }
+      }
+    }
+    return nextSquares;
+  }
+
   useEffect(() => {
     if (bombRevealed) {
       setGameIsOver(true);
       setGameStatus("You lose!");
+      setSquares(revealBombs(squares, height, width));
     } else if (squaresRevealed === width * height - numBombs) {
       setGameIsOver(true);
       setGameStatus("You win!");
+      setSquares(revealFlags(squares, height, width));
     } else {
       setGameStatus(getNumBombsRemaining());
     }
@@ -380,14 +417,19 @@ export default function Game() {
         handleRightClick={handleRightClick}
         />
       </div>
-      <div className="config">
+      {/* <div className="config">
         <button>Edit Game Parameters</button>
         <GameConfigForm 
         formData={formData}
         handleInputChange={handleGameConfigFormInputChange}
         handleSubmit={handleGameConfigFormSubmit}
         />
-      </div>
+      </div> */}
+      <Config 
+        formData={formData}
+        handleInputChange={handleGameConfigFormInputChange}
+        handleSubmit={handleGameConfigFormSubmit}
+      />
     </div>
     </>
   );
@@ -399,3 +441,14 @@ export default function Game() {
 
 //   return <Game/>;
 // }
+
+// Game state, utility function that modify game state -> don't have any react code
+// flag bomb
+// reveal a square -> recursive bfs
+// generate bombs
+// restart (reset board and then generates bombs)
+// -----
+// React UI takes state as a prop and render html 
+// button -> calls one of the utilities and says flag bomb at (2,3)
+// button -> restarts
+// tile/square ui -> flag or reveal

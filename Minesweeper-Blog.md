@@ -50,6 +50,8 @@
 
 ### Added form to customize the number of rows/columns/bombs
 
+  * Convert to useEffect?
+
 
 ## TODO
 
