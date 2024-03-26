@@ -52,14 +52,22 @@
 
   * Convert to useEffect?
 
+## Day 7
+
+### Added emojis as square symbols
+
+### Updated css layout
+
+### Flags all bombs on won screen, shows bombs on loss screen
+
+## Day 8
+
+### Bombs now generate on first reveal, making sure that the user never clicks a bomb on their first try
+
 
 ## TODO
 
 ### Add UI to edit board size and number of bombs
-
-### Flag all bombs on won screen
-
-### Show all bombs on loss screen, with extra marker for last clicked
 
 ### Generate biased boards/make sure boards are solvable
 

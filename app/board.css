@@ -14,6 +14,9 @@
 	width: 50px;
   }
   
+  /*Takes effect on any component with both the square and unrevealed className 
+  	Precedence order: most specific first, then last in css file
+  	So this overrides .square but not .square.flag*/
   .square.unrevealed {
 	background: #fff;
   }
@@ -42,4 +45,8 @@
 clear: both;
 content: '';
 display: table;
+}
+
+.large-text {
+	font-size: 50px;
 }
