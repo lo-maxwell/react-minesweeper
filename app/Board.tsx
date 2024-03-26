@@ -8,7 +8,7 @@ export const DEFAULT_BOARD_SIZE = 10;
 
 function Square({ state, isBomb, value, onSquareLeftClick, onSquareRightClick}: {state: string, isBomb: boolean, value: number, onSquareLeftClick: OnSquareClickHandler, onSquareRightClick: OnSquareRightClickHandler}) {
   if (state === "Hidden") {
-    return (<button className="square unrevealed bg-blue-500" onClick={onSquareLeftClick} onContextMenu={onSquareRightClick}></button>);
+    return (<button className="square unrevealed" onClick={onSquareLeftClick} onContextMenu={onSquareRightClick}></button>);
   } else if (state === "Flagged") {
     return (<button className="square flag" onClick={onSquareLeftClick} onContextMenu={onSquareRightClick}>🚩</button>);
   } else if (state === "Wrong Flag") {
@@ -79,7 +79,10 @@ export function Board({width, height, numBombs, squares, handleLeftClick, handle
 
   return (
     <>
-    {renderBoard()}
+    <div className="items-center">
+      {renderBoard()}
+    </div>
+    
     </>
   );
 }

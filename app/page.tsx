@@ -262,9 +262,9 @@ export default function Game() {
   //Render UI helpers
   function renderFlagModeButton () {
     if (flagMode) {
-      return <button onClick={invertFlagMode} className="flag-mode-on">Flag Mode</button>;
+      return <button onClick={invertFlagMode} className="flag-mode-on px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Flag Mode</button>;
     } else {
-      return <button onClick={invertFlagMode} className="flag-mode-off">Flag Mode</button>;
+      return <button onClick={invertFlagMode} className="flag-mode-off px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Flag Mode</button>;
     }
     
   }
@@ -275,14 +275,16 @@ export default function Game() {
 
   return (
     <>
-    <div className="game">
-      <div className="title">
-        <h3>Minesweeper!</h3>
+    <div className="mx-auto space-y-2 shadow-lg bg-gray-400">
+      <div className="text-center space-y-0.5 px-8 pb-4 bg-gray-800 text-white ">
+        <div className="text-2xl font-bold">Minesweeper!</div>
         {renderGameStatus()}
-        <button onClick={restartBoard}>Restart</button>
-        {renderFlagModeButton()}
+        <div className="space-x-4">
+          <button onClick={restartBoard} className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Restart</button>
+          {renderFlagModeButton()}
+        </div>
       </div>
-      <div className="game-board">
+      <div className="flex justify-center">
         <Board
         width={width}
         height={height}
@@ -292,11 +294,13 @@ export default function Game() {
         handleRightClick={handleRightClick}
         />
       </div>
-      <Config 
-        formData={formData}
-        handleInputChange={handleGameConfigFormInputChange}
-        handleSubmit={handleGameConfigFormSubmit}
-      />
+      <div className="flex justify-center">
+        <Config 
+          formData={formData}
+          handleInputChange={handleGameConfigFormInputChange}
+          handleSubmit={handleGameConfigFormSubmit}
+        />
+      </div>
     </div>
     </>
   );
