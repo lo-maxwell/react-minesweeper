@@ -58,7 +58,7 @@ export function Board({width, height, numBombs, squares, handleLeftClick, handle
     return (
       <>
       {rows.map((row) => (
-        <div className="board-row" key={row}>
+        <div className="board-row flex" key={row}>
           {cols.map((col) => {
             const index = row * width + col;
             return (<Square 

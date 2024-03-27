@@ -4,11 +4,12 @@
 import React, { useEffect, useState } from 'react';
 import { Config } from './Config';
 import { SquareType, DEFAULT_BOARD_SIZE, Board } from './Board';
+import { InstructionPage } from './InstructionPage';
 
 export default function Game() {
   const [width, setWidth] = useState(10);
   const [height, setHeight] = useState(10);
-  const [numBombs, setNumBombs] = useState(50);
+  const [numBombs, setNumBombs] = useState(10);
   const generateSquare = (): SquareType =>  ['Hidden', false, 0];
   const generateRow = (width: number) => ():  Array<SquareType> => Array(width).fill(0).map(generateSquare);
   // const initialSquares = new Array(height).fill(0).map(generateRow(width));
@@ -22,9 +23,17 @@ export default function Game() {
   const [squaresRevealed, setSquaresRevealed] = useState(0);
   const [numFlags, setNumFlags] = useState(0);
   let gameSetup = squaresRevealed===0;
+  const [showForm, setShowForm] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(true);
 
   //Config Form
   const [formData, setFormData] = useState({
+    rows: String(DEFAULT_BOARD_SIZE), 
+    cols: String(DEFAULT_BOARD_SIZE), 
+    numBombs: String(DEFAULT_BOARD_SIZE)
+  });
+
+  const [originalFormData, setOriginalFormData] = useState({
     rows: String(DEFAULT_BOARD_SIZE), 
     cols: String(DEFAULT_BOARD_SIZE), 
     numBombs: String(DEFAULT_BOARD_SIZE)
@@ -46,6 +55,8 @@ export default function Game() {
     // console.log('Form submitted', formData);
     const newData = handleGameFormSubmitHelper();
     setFormData(newData);
+    setOriginalFormData(newData);
+    setShowForm(false);
   };
 
   function handleGameFormSubmitHelper() {
@@ -238,6 +249,9 @@ export default function Game() {
   const restartBoard = () => {
     const newData = handleGameFormSubmitHelper();
     setFormData(newData);
+    setOriginalFormData({ rows: newData['rows'],
+                          cols: newData['cols'],
+                          numBombs: newData['numBombs']});
     const newHeight = parseInt(newData.rows, 10);
     const newWidth = parseInt(newData.cols, 10);
     const newNumBombs = parseInt(newData.numBombs, 10);
@@ -255,6 +269,14 @@ export default function Game() {
     setNumFlags(0);
   }
 
+  const showConfigForm = () => {
+    setShowForm(true);
+  }
+
+  const showInstructionsPage = () => {
+    setShowInstructions(true);
+  }
+
   const invertFlagMode = () => {
     setFlagMode(!flagMode);
   }
@@ -264,7 +286,7 @@ export default function Game() {
     if (flagMode) {
       return <button onClick={invertFlagMode} className="flag-mode-on px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Flag Mode</button>;
     } else {
-      return <button onClick={invertFlagMode} className="flag-mode-off px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Flag Mode</button>;
+      return <button onClick={invertFlagMode} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Flag Mode</button>;
     }
     
   }
@@ -275,30 +297,49 @@ export default function Game() {
 
   return (
     <>
-    <div className="mx-auto space-y-2 shadow-lg bg-gray-400">
+    <div className="fixed px-4 inset-0 mx-auto space-y-2 shadow-lg bg-gray-400 h-screen overflow-x-auto overflow-y-auto">
       <div className="text-center space-y-0.5 px-8 pb-4 bg-gray-800 text-white ">
-        <div className="text-2xl font-bold">Minesweeper!</div>
+        <div className="flex">
+          <span className="flex-1 mr-auto invisible"> . </span>
+          <span className="flex-1 text-2xl font-bold justify-center">Minesweeper!</span>
+          <span className="flex flex-1 justify-end relative"><button onClick={showInstructionsPage} className="text-4xl absolute top-4 right-0">ℹ️</button></span>
+          
+        </div>
         {renderGameStatus()}
         <div className="space-x-4">
-          <button onClick={restartBoard} className="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Restart</button>
+          <button onClick={restartBoard} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">New Game</button>
           {renderFlagModeButton()}
+          <button onClick={showConfigForm} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Customize Board</button>
+          
         </div>
       </div>
-      <div className="flex justify-center">
-        <Board
-        width={width}
-        height={height}
-        numBombs={numBombs}
-        squares={squares}
-        handleLeftClick={handleLeftClick}
-        handleRightClick={handleRightClick}
-        />
+      <div className="flex justify-center w-screen-8">
+        <div className="flex justify-left overflow-x-auto flex-wrap">
+          <Board
+          width={width}
+          height={height}
+          numBombs={numBombs}
+          squares={squares}
+          handleLeftClick={handleLeftClick}
+          handleRightClick={handleRightClick}
+          />
+        </div>
       </div>
       <div className="flex justify-center">
         <Config 
           formData={formData}
+          setFormData={setFormData}
           handleInputChange={handleGameConfigFormInputChange}
           handleSubmit={handleGameConfigFormSubmit}
+          showForm={showForm}
+          setShowForm={setShowForm}
+          originalForm={originalFormData}
+        />
+      </div>
+      <div className="">
+        <InstructionPage
+          showInstructions={showInstructions}
+          setShowInstructions={setShowInstructions}
         />
       </div>
     </div>

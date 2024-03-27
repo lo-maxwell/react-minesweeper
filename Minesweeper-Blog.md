@@ -64,10 +64,12 @@
 
 ### Bombs now generate on first reveal, making sure that the user never clicks a bomb on their first try
 
+### Updated UI using tailwind
+
 
 ## TODO
 
-### Add UI to edit board size and number of bombs
+### Move game settings to an overlay
 
 ### Generate biased boards/make sure boards are solvable
 
