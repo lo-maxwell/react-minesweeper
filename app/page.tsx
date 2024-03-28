@@ -14,8 +14,6 @@ export default function Game() {
   const generateRow = (width: number) => ():  Array<SquareType> => Array(width).fill(0).map(generateSquare);
   // const initialSquares = new Array(height).fill(0).map(generateRow(width));
   const [squares, setSquares] = useState<Array<Array<SquareType>>>(new Array(height).fill(0).map(generateRow(width)));
-  // const rows = Array.from({length: height}, (_, index) => index);
-  // const cols = Array.from({length: width}, (_, index) => index);
   const [gameIsOver, setGameIsOver] = useState(false);
   const [bombRevealed, setBombRevealed] = useState(false);
   const [flagMode, setFlagMode] = useState(false);
@@ -52,7 +50,6 @@ export default function Game() {
 
   const handleGameConfigFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // console.log('Form submitted', formData);
     const newData = handleGameFormSubmitHelper();
     setFormData(newData);
     setOriginalFormData(newData);
@@ -66,21 +63,22 @@ export default function Game() {
     let newCols = parseInt(formData['cols'], 10) || DEFAULT_BOARD_SIZE;
     let newNumBombs = parseInt(formData['numBombs'], 10) || DEFAULT_BOARD_SIZE;
 
-    if (newRows <= 0) {
-      newRows = 1;
-    }
-    if (newRows > 100) {
-      newRows = 100;
-    }
-    if (newCols <= 0) {
-      newCols = 1;
-    }
-    if (newCols > 100) {
-      newCols = 100;
-    }
-    if (newNumBombs <= 0) {
-      newNumBombs = 1;
-    }
+    // Handled by the html numeric form
+    // if (newRows <= 0) {
+    //   newRows = 1;
+    // }
+    // if (newRows > 100) {
+    //   newRows = 100;
+    // }
+    // if (newCols <= 0) {
+    //   newCols = 1;
+    // }
+    // if (newCols > 100) {
+    //   newCols = 100;
+    // }
+    // if (newNumBombs <= 0) {
+    //   newNumBombs = 1;
+    // }
     if (newNumBombs >= newRows * newCols) {
       newNumBombs = Math.max(newRows * newCols - 1, 1);
     }
@@ -258,8 +256,6 @@ export default function Game() {
     setHeight(newHeight);
     setWidth(newWidth);
     setNumBombs(newNumBombs);
-    // const newInitialSquares = new Array(newHeight).fill(0).map(generateRow(newWidth));
-    // const nextSquares = generateBombs(newInitialSquares, newNumBombs, newHeight, newWidth, -1, -1);
     setSquares(new Array(newHeight).fill(0).map(generateRow(newWidth)));
     setGameIsOver(false);
     setBombRevealed(false);

@@ -38,19 +38,6 @@ function Square({ state, isBomb, value, onSquareLeftClick, onSquareRightClick}: 
 }
 
 export function Board({width, height, numBombs, squares, handleLeftClick, handleRightClick}: {width: number, height: number, numBombs: number, squares: Array<Array<SquareType>>, handleLeftClick: Function, handleRightClick: Function}) {
-  // const [width, setWidth] = useState(10);
-  // const [height, setHeight] = useState(10);
-  // const [numBombs, setNumBombs] = useState(20);
-
-  
-  
-  // console.log(initialSquares)
-  // const [squares, setSquares] = useState<Array<Array<SquareType>>>(generateBombs(initialSquares, numBombs));
-
-  // useEffect(() => {
-  //   setSquares(generateBombs(initialSquares, numBombs));
-  // }, []);
-
   const rows = Array.from({length: height}, (_, index) => index);
   const cols = Array.from({length: width}, (_, index) => index);
 
@@ -75,14 +62,12 @@ export function Board({width, height, numBombs, squares, handleLeftClick, handle
       </>
     )
   }
-   
 
   return (
     <>
     <div className="items-center">
       {renderBoard()}
     </div>
-    
     </>
   );
 }

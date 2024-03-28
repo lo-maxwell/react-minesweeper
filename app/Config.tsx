@@ -26,24 +26,19 @@ function GameConfigForm({formData, setFormData, handleInputChange, handleSubmit,
 	const handleClickOutside = (event: any) => {
 		const target = event.target as HTMLElement;
 		const configElement = document.querySelector('.config-form');
-		// console.log(target);
-		// console.log(configElement);
 		// Check if the click occurred outside the target element
 		if (configElement && !configElement.contains(target)) {
-			// console.log("outside");
 			setShowForm(false);
 			setFormData(originalForm);
 		}
 	  };
 
 	useEffect(() => {
-		// console.log("test");
 	// Add event listener when the component mounts
 	document.body.addEventListener('click', handleClickOutside);
 
 	// Remove event listener when the component unmounts
 	return () => {
-		// console.log("untest");
 		document.body.removeEventListener('click', handleClickOutside);
 	};
 	}, [showForm]); // Only re-run the effect if showForm changes

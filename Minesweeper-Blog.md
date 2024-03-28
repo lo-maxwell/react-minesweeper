@@ -66,11 +66,8 @@
 
 ### Updated UI using tailwind
 
+## Day 9
 
-## TODO
+### Updated UI again
 
-### Move game settings to an overlay
-
-### Generate biased boards/make sure boards are solvable
-
-### Update CSS using Tailwind to prettyify everything
+### Added instructions page
