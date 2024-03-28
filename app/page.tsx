@@ -24,7 +24,7 @@ export default function Game() {
   const [numFlags, setNumFlags] = useState(0);
   let gameSetup = squaresRevealed===0;
   const [showForm, setShowForm] = useState(false);
-  const [showInstructions, setShowInstructions] = useState(true);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   //Config Form
   const [formData, setFormData] = useState({
@@ -302,16 +302,19 @@ export default function Game() {
         <div className="flex">
           <span className="flex-1 mr-auto invisible"> . </span>
           <span className="flex-1 text-2xl font-bold justify-center">Minesweeper!</span>
-          <span className="flex flex-1 justify-end relative"><button onClick={showInstructionsPage} className="text-4xl absolute top-4 right-0">ℹ️</button></span>
+          <span className="flex flex-1 justify-end relative"><button onClick={showInstructionsPage} className="text-3xl absolute top-4 right-0">ℹ️</button></span>
           
         </div>
         {renderGameStatus()}
-        <div className="space-x-4">
-          <button onClick={restartBoard} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">New Game</button>
-          {renderFlagModeButton()}
-          <button onClick={showConfigForm} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Customize Board</button>
-          
+        <span className="flex">
+        <span className="flex-1"></span>
+        <div className="flex flex-5 space-x-4">
+          <span className=""><button onClick={restartBoard} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">New Game</button></span>
+          <span className=""><button onClick={invertFlagMode} className={`${flagMode ? `flag-mode-on` : `bg-gray-400`} px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2`}>Flag Mode</button></span>
+          <span className=""><button onClick={showConfigForm} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Customize Board</button></span>
         </div>
+        <span className="flex-1"></span>
+        </span>
       </div>
       <div className="flex justify-center w-screen-8">
         <div className="flex justify-left overflow-x-auto flex-wrap">
