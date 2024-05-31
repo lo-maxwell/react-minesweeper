@@ -3,13 +3,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { Config } from './Config';
-import { SquareType, DEFAULT_BOARD_SIZE, Board } from './Board';
+import { SquareType, DEFAULT_BOARD_SIZE, Board, DEFAULT_NUM_BOMBS } from './Board';
 import { InstructionPage } from './InstructionPage';
+import { SubmitScoreButton } from './SubmitScoreButton';
+import TimerComponent from './TimerComponent';
+import Link from 'next/link';
 
 export default function Game() {
-  const [width, setWidth] = useState(10);
-  const [height, setHeight] = useState(10);
-  const [numBombs, setNumBombs] = useState(10);
+  const [width, setWidth] = useState(DEFAULT_BOARD_SIZE);
+  const [height, setHeight] = useState(DEFAULT_BOARD_SIZE);
+  const [numBombs, setNumBombs] = useState(DEFAULT_NUM_BOMBS);
   const generateSquare = (): SquareType =>  ['Hidden', false, 0];
   const generateRow = (width: number) => ():  Array<SquareType> => Array(width).fill(0).map(generateSquare);
   // const initialSquares = new Array(height).fill(0).map(generateRow(width));
@@ -23,18 +26,22 @@ export default function Game() {
   let gameSetup = squaresRevealed===0;
   const [showForm, setShowForm] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showSubmitScore, setShowSubmitScore] = useState(0);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
 
   //Config Form
   const [formData, setFormData] = useState({
     rows: String(DEFAULT_BOARD_SIZE), 
     cols: String(DEFAULT_BOARD_SIZE), 
-    numBombs: String(DEFAULT_BOARD_SIZE)
+    numBombs: String(DEFAULT_NUM_BOMBS)
   });
 
   const [originalFormData, setOriginalFormData] = useState({
     rows: String(DEFAULT_BOARD_SIZE), 
     cols: String(DEFAULT_BOARD_SIZE), 
-    numBombs: String(DEFAULT_BOARD_SIZE)
+    numBombs: String(DEFAULT_NUM_BOMBS)
   });
 
   const handleGameConfigFormInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,24 +68,8 @@ export default function Game() {
 
     let newRows = parseInt(formData['rows'], 10) || DEFAULT_BOARD_SIZE;
     let newCols = parseInt(formData['cols'], 10) || DEFAULT_BOARD_SIZE;
-    let newNumBombs = parseInt(formData['numBombs'], 10) || DEFAULT_BOARD_SIZE;
+    let newNumBombs = parseInt(formData['numBombs'], 10) || DEFAULT_NUM_BOMBS;
 
-    // Handled by the html numeric form
-    // if (newRows <= 0) {
-    //   newRows = 1;
-    // }
-    // if (newRows > 100) {
-    //   newRows = 100;
-    // }
-    // if (newCols <= 0) {
-    //   newCols = 1;
-    // }
-    // if (newCols > 100) {
-    //   newCols = 100;
-    // }
-    // if (newNumBombs <= 0) {
-    //   newNumBombs = 1;
-    // }
     if (newNumBombs >= newRows * newCols) {
       newNumBombs = Math.max(newRows * newCols - 1, 1);
     }
@@ -180,6 +171,10 @@ export default function Game() {
 
   const handleClick = (row: number, col: number, clickType: string) => {
     if (!gameIsOver) {
+      if (!gameStarted) { 
+        setGameStarted(true); 
+        startTimer();
+      }
       const nextSquares = clickSquare(squares.slice(), row, col, clickType);
       setSquares(nextSquares);
     }
@@ -220,10 +215,13 @@ export default function Game() {
       setGameIsOver(true);
       setGameStatus("You lose!");
       setSquares(revealBombs(squares, height, width));
+      stopTimer();
     } else if (squaresRevealed === width * height - numBombs) {
       setGameIsOver(true);
       setGameStatus("You win!");
       setSquares(revealFlags(squares, height, width));
+      setShowSubmitScore(1);
+      stopTimer();
     } else {
       setGameStatus(getNumBombsRemaining());
     }
@@ -263,6 +261,10 @@ export default function Game() {
     setFlagMode(false);
     setSquaresRevealed(0);
     setNumFlags(0);
+    setShowSubmitScore(0);
+    stopTimer();
+    setElapsedTime(0);
+    setGameStarted(false);
   }
 
   const showConfigForm = () => {
@@ -276,6 +278,16 @@ export default function Game() {
   const invertFlagMode = () => {
     setFlagMode(!flagMode);
   }
+
+  //Timer Component
+  const startTimer = () => {
+    setStartTime(Date.now());
+  };
+
+  const stopTimer = () => {
+    setStartTime(null);
+    // setElapsedTime(0); // Optionally reset the elapsed time when stopping the timer
+  };
 
   //Render UI helpers
   function renderFlagModeButton () {
@@ -293,23 +305,30 @@ export default function Game() {
 
   return (
     <>
-    <div className="fixed px-4 inset-0 mx-auto space-y-2 shadow-lg bg-gray-400 h-screen overflow-x-auto overflow-y-auto">
+    <div className="fixed px-4 inset-0 mx-auto space-y-2 shadow-lg bg-blue-200 h-screen overflow-x-auto overflow-y-auto">
       <div className="text-center space-y-0.5 px-8 pb-4 bg-gray-800 text-white ">
         <div className="flex">
-          <span className="flex-1 mr-auto invisible"> . </span>
+          <div className="flex flex-1 items-center justify-start">
+              <Link href="/leaderboard">
+                <button className='justify-center bg-blue-500 text-white px-2 py-2 mr-4 mt-1 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 flex items-center justify-center'>
+                  🏆
+                </button>
+              </Link> 
+              <TimerComponent startTime={startTime} setStartTime={setStartTime} elapsedTime={elapsedTime} setElapsedTime={setElapsedTime}/>
+          </div>
           <span className="flex-1 text-2xl font-bold justify-center">Minesweeper!</span>
           <span className="flex flex-1 justify-end relative"><button onClick={showInstructionsPage} className="text-3xl absolute top-4 right-0">ℹ️</button></span>
-          
         </div>
         {renderGameStatus()}
+        <SubmitScoreButton showSubmitScore={showSubmitScore} setShowSubmitScore={setShowSubmitScore} time={elapsedTime} boardSettings={{width: width, height: height, numBombs: numBombs}}/>
         <span className="flex">
-        <span className="flex-1"></span>
-        <div className="flex flex-5 space-x-4">
-          <span className=""><button onClick={restartBoard} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">New Game</button></span>
-          <span className=""><button onClick={invertFlagMode} className={`${flagMode ? `flag-mode-on` : `bg-gray-400`} px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2`}>Flag Mode</button></span>
-          <span className=""><button onClick={showConfigForm} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Customize Board</button></span>
-        </div>
-        <span className="flex-1"></span>
+          <span className="flex-1"></span>
+          <div className="flex flex-5 space-x-4">
+            <span className=""><button onClick={restartBoard} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">New Game</button></span>
+            <span className=""><button onClick={invertFlagMode} className={`${flagMode ? `flag-mode-on` : `bg-gray-400`} px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2`}>Flag Mode</button></span>
+            <span className=""><button onClick={showConfigForm} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Customize Board</button></span>
+          </div>
+          <span className="flex-1"></span>
         </span>
       </div>
       <div className="flex justify-center w-screen-8">
@@ -324,6 +343,7 @@ export default function Game() {
           />
         </div>
       </div>
+      
       <div className="flex justify-center">
         <Config 
           formData={formData}

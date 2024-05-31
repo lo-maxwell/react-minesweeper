@@ -71,3 +71,19 @@
 ### Updated UI again
 
 ### Added instructions page
+
+
+## TODO
+
+- Don't expose apis
+-- Instead, just call the server actions -- see api/leaderboard/viewEntriess/route.ts
+-- But if you use an external database like planetscale then you need the apis open
+
+- Split the client and server side code
+-- Server side should call server actions, fetch db data, and pass it down to the client
+
+- Don't need app/ and pages/, stick to 1
+
+- Look into vercel postgres
+
+- Write external script to init database
