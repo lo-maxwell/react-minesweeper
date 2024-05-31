@@ -1,0 +1,7 @@
+{
+	"git": {
+	  "deploymentEnabled": {
+		"mysql-leaderboard": false
+	  }
+	}
+  }
