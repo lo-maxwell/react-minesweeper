@@ -71,3 +71,13 @@
 ### Updated UI again
 
 ### Added instructions page
+
+## Day ?
+
+### Updated UI again
+
+### Added timer component to track scores
+
+### Added mysql database with crud operations & apis to allow users to submit scores to a leaderboard, which is shown on a separate page
+
+  * But I couldn't figure out how to set up an external database with vercel and vercel uses postgres by default, so that part isn't going into the live deployment. Check out the mysql-leaderboard branch instead.
