@@ -23,6 +23,19 @@ function GameConfigForm({formData, setFormData, handleInputChange, handleSubmit,
 	  	/>);
 	}
 
+	function setBeginnerBoard() {
+		setFormData({rows: 9, cols: 9, numBombs: 10});
+	}
+
+	function setIntermediateBoard() {
+		setFormData({rows: 16, cols: 16, numBombs: 40});
+	}
+
+	function setExpertBoard() {
+		setFormData({rows: 16, cols: 30, numBombs: 99});
+	}
+
+
 	const handleClickOutside = (event: any) => {
 		const target = event.target as HTMLElement;
 		const configElement = document.querySelector('.config-form');
@@ -79,6 +92,11 @@ function GameConfigForm({formData, setFormData, handleInputChange, handleSubmit,
 				maxValue: "10000"
 				})}
 			</div>
+		</div>
+		<div className="flex px-2 space-x-2">
+			<button type="button" onClick={setBeginnerBoard} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Beginner</button>
+			<button type="button" onClick={setIntermediateBoard} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Intermediate</button>
+			<button type="button" onClick={setExpertBoard} className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Expert</button>
 		</div>
 		<div className="pt-4">
 			<button type="submit" className="bg-gray-300 px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Submit</button>

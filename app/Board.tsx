@@ -4,7 +4,8 @@ export type SquareType = [string, boolean, number]
 type OnSquareClickHandler = () => void;
 type OnSquareRightClickHandler = (e: React.SyntheticEvent) => void;
 
-export const DEFAULT_BOARD_SIZE = 10;
+export const DEFAULT_BOARD_SIZE = 9;
+export const DEFAULT_NUM_BOMBS = 10;
 
 function Square({ state, isBomb, value, onSquareLeftClick, onSquareRightClick}: {state: string, isBomb: boolean, value: number, onSquareLeftClick: OnSquareClickHandler, onSquareRightClick: OnSquareRightClickHandler}) {
   if (state === "Hidden") {
@@ -45,7 +46,7 @@ export function Board({width, height, numBombs, squares, handleLeftClick, handle
     return (
       <>
       {rows.map((row) => (
-        <div className="board-row flex" key={row}>
+        <div className="board-row flex overflow-hidden" key={row}>
           {cols.map((col) => {
             const index = row * width + col;
             return (<Square 
