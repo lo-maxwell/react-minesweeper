@@ -1,23 +1,13 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Minesweeper ##
 
-Live deployment here: https://minesweeper-boom.vercel.app/
+Minesweeper webapp made with React, Nextjs, Tailwind CSS
 
+## Deployed with vercel here: https://minesweeper-boom.vercel.app/
 
-## Run locally
+## Run locally with 
+``` 
+npm install
 
-First, download dependencies:
-```npm install```
+npm run dev 
 
-Then, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
